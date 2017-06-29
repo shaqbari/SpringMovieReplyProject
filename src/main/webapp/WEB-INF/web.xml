@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+
+	<servlet>
+		<servlet-name>dispatcher</servlet-name>
+		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+		<init-param>
+			<param-name>contextConfigLocation</param-name>
+			<param-value>/WEB-INF/config/application-*.xml</param-value><!-- 여러개 동시에 읽을때 꼭 설정해줘야 한다. -->
+		</init-param>
+	</servlet>
+	<!-- 
+			1) tomcat ==> 등록된 web.xml을 읽고
+					<servlet>에 등록된 서블릿을 생성
+			2) init-param ==> DispatcherServlet
+			Servlet 	시작
+				->init
+				-> serveice(doget, dopost) : loop(Thread : run)
+				=> destroy
+			
+				public class DispatcherServlet extends HttpServlet{
+					public void init(ServletConfig config){
+						Spring[] path=config.getInitParameter("contextConfigLocation")
+						if(path==null){
+							path="/WEB-INF/<servlet-name>-servlet.xml"
+						}
+						WebApplicationContext wc=new WebApplicationContext(path); //이클래스안에 Handlermapping이 있다. @Controller된거 찾아온다.
+						==> XML(SAX파싱)
+					}
+				}
+	 -->
+	<servlet-mapping>
+		<servlet-name>dispatcher</servlet-name>
+		<url-pattern>*.do</url-pattern>
+	</servlet-mapping>
+	
+	<filter>
+		<filter-name>encodingFilter</filter-name>
+		<filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+		<init-param>
+			<param-name>encoding</param-name>
+			<param-value>UTF-8</param-value>
+		</init-param>
+	</filter>
+	<filter-mapping>
+		<filter-name>encodingFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+
+</web-app>
